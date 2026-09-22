@@ -6,6 +6,10 @@ out
 dist
 *.tgz
 
+# wrangler / cloudflare
+.wrangler
+.dev.vars
+
 # code coverage
 coverage
 *.lcov

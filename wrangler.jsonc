@@ -1,0 +1,18 @@
+{
+  // Wrangler v4 config: static SPA from dist/, Worker handles /api/* only.
+  // run_worker_first sends API paths to the Worker; everything else is served
+  // by the asset layer, which applies the single-page-application fallback.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lumen",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "observability": {
+    "enabled": true
+  }
+}

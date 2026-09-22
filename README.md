@@ -13,8 +13,6 @@ A serene, ambient web experience designed to evoke calm, warmth, and wonder.
 
 A living aurora drifts across deep night blue behind everything, layered with a twinkling star field, film grain, glass panels, and a warm ember-and-sage palette. Typography pairs Fraunces (display serif) with Inter (body). Time-aware greetings meet you at the door; a kind sign-off sees you out.
 
-Everything runs client-side — no backend, no keys, no tracking.
-
 ## Stack
 
 - React 19 + TypeScript + Vite
@@ -22,12 +20,28 @@ Everything runs client-side — no backend, no keys, no tracking.
 - Framer Motion for motion design
 - lucide-react icons
 - Web Audio API for sound
+- Cloudflare Worker for `/api/*` (JSON endpoints) + static asset hosting
 
 ## Commands
 
 ```bash
 bun install
-bun run dev        # start dev server (0.0.0.0)
-bun run build      # production build to dist/
-bun run typecheck  # tsc -b --noEmit
+bun run dev         # Vite dev server (0.0.0.0)
+bun run build       # production build to dist/
+bun run typecheck   # app + worker typechecks
 ```
+
+## Deploying to Cloudflare
+
+The repo is wired for Cloudflare Workers with static assets:
+
+- `wrangler.jsonc` — serves `dist/` as static assets with SPA fallback (`not_found_handling: "single-page-application"`); only `/api/*` is routed to the Worker (`run_worker_first`).
+- `worker/index.ts` — the Worker: `GET /api/health`, `GET /api/reflections`, `GET /api/joy-planting-spots`, plus CORS preflight. It imports the same reflections data as the UI (`src/data/reflections.ts`).
+
+```bash
+bun run cf:dry-run  # build + bundle check, no upload
+bun run cf:dev      # build + run the Worker locally on :8787
+bun run cf:deploy   # build + deploy to Cloudflare
+```
+
+To deploy: `bunx wrangler login` once, then `bun run cf:deploy`. Wrangler will print the `*.workers.dev` URL.
